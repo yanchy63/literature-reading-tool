@@ -1,8 +1,8 @@
 {
   "name": "scientific-paper-reading",
-  "description": "Parse scientific PDFs into structured Markdown; generate Chinese reading notes, translations, and Word exports with human-readable formulas.",
-  "version": "0.1.0",
+  "description": "文献阅读工具：Parse scientific PDFs into structured Markdown; Chinese notes/translations and Word exports. https://github.com/yanchy63/literature-reading-tool",
+  "version": "0.1.1",
   "author": {
-    "name": "artical-review"
+    "name": "yanchy63"
   }
 }

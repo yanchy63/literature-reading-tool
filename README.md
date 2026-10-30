@@ -1,136 +1,158 @@
-# 文献阅读工具（scientific-paper-reading）
+# 文献阅读工具（literature-reading-tool）
 
 跨 Agent 可用的科研 PDF 阅读技能：**解析 PDF → 结构化 Markdown → 中文阅读笔记 / 全文译文 → Word（.docx）导出**。
 
-> GitHub 仓库展示名建议改为「文献阅读工具」（Settings → General → Repository name）。
+- **仓库：** https://github.com/yanchy63/literature-reading-tool  
+- 兼容 [Agent Skills](https://agentskills.io) / [Agent Plugins](https://agent-plugins.org)  
+- 环境以 **`.venv` / 便携 Python + pip** 为主，**不需要 conda**
 
-不绑定 Cursor；兼容 [Agent Skills](https://agentskills.io) / [Agent Plugins](https://agent-plugins.org) 约定。环境以 **`.venv` + pip** 为主，**不需要 conda**。
+---
+
+## 一键安装（全 Agent 通用）
+
+安装器会把技能写入各 Agent 会扫描的目录（可多选）：
+
+| 目标 | 用户级路径 |
+|------|------------|
+| 通用 Agent Skills | `~/.agents/skills/scientific-paper-reading` |
+| Cursor | `~/.cursor/skills/scientific-paper-reading` |
+| Claude | `~/.claude/skills/scientific-paper-reading` |
+| Codex | `~/.codex/skills/scientific-paper-reading` |
+
+### Windows（PowerShell）
+
+**远程一键（推荐）：**
+
+```powershell
+irm https://raw.githubusercontent.com/yanchy63/literature-reading-tool/main/install.ps1 | iex
+```
+
+带环境初始化 / 便携 Python / Cursor 本地插件：
+
+```powershell
+# 先下载再带参数执行更稳妥
+git clone https://github.com/yanchy63/literature-reading-tool.git
+cd literature-reading-tool
+.\install.ps1 -WithEnv -FetchPython -CursorPlugin
+```
+
+### macOS / Linux
+
+**远程一键：**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/yanchy63/literature-reading-tool/main/install.sh | bash
+```
+
+带参数：
+
+```bash
+git clone https://github.com/yanchy63/literature-reading-tool.git
+cd literature-reading-tool
+bash install.sh --with-env --fetch-python --cursor-plugin
+```
+
+### 已有仓库时用 Python 安装器（跨平台）
+
+```bash
+python install_agent_skill.py --all
+python install_agent_skill.py --agents agents,cursor,claude,codex --with-env
+python install_agent_skill.py --project          # 额外装到当前项目
+python install_agent_skill.py --cursor-plugin    # 整仓拷到 Cursor local plugin
+python install_agent_skill.py --list-targets     # 查看将写入的路径
+```
+
+安装后请 **Reload Window / 重启 Agent**，技能名：`scientific-paper-reading`。
+
+---
+
+## 其他安装方式
+
+### Cursor：从 GitHub 导入插件
+
+1. Cursor → **Customize** → 从 GitHub Repository 导入  
+2. 仓库 URL：`https://github.com/yanchy63/literature-reading-tool`  
+3. 安装插件 `scientific-paper-reading`
+
+### 手动拷贝
+
+```bash
+git clone https://github.com/yanchy63/literature-reading-tool.git
+cp -r literature-reading-tool/skills/scientific-paper-reading ~/.agents/skills/
+```
+
+---
 
 ## 仓库结构
 
 ```text
-scientific-paper-reading/          ← Git 仓库根目录
-├── plugin.json                    # Agent Plugins 清单
-├── .cursor-plugin/                # Cursor 从 GitHub 导入用
-│   ├── plugin.json
-│   └── marketplace.json
+literature-reading-tool/             ← Git 仓库根目录
+├── install.ps1 / install.sh         # 一键安装入口
+├── install_agent_skill.py           # 全 Agent 通用安装器
+├── plugin.json                      # Agent Plugins 清单
+├── .cursor-plugin/                  # Cursor GitHub 导入用
 ├── README.md
 ├── LICENSE
 └── skills/
-    └── scientific-paper-reading/  ← 技能本体
+    └── scientific-paper-reading/    ← 技能本体
         ├── SKILL.md
         ├── requirements.txt
-        ├── scripts/
+        ├── scripts/                 # 含 bootstrap / setup_env / 解析 / Word 导出
         ├── src/
         ├── references/
-        └── assets/
+        └── runtime/                 # 可选便携 Python（下载后生成，不进 Git）
 ```
 
-## 安装方式
-
-### A. 任意 Agent（通用，推荐）
-
-把技能目录拷到本机技能路径之一：
-
-| Agent | 用户级目录 | 项目级目录 |
-|-------|------------|------------|
-| Cursor | `~/.cursor/skills/` | `.cursor/skills/` |
-| 通用 / Claude 等 | `~/.agents/skills/` | `.agents/skills/` |
-
-```bash
-git clone https://github.com/<你的用户名>/scientific-paper-reading.git
-# 只安装技能本体
-cp -r scientific-paper-reading/skills/scientific-paper-reading ~/.agents/skills/
-# 或 Cursor：
-# cp -r scientific-paper-reading/skills/scientific-paper-reading ~/.cursor/skills/
-```
-
-Windows PowerShell 示例：
-
-```powershell
-git clone https://github.com/<你的用户名>/scientific-paper-reading.git
-Copy-Item -Recurse scientific-paper-reading\skills\scientific-paper-reading $HOME\.agents\skills\
-# 或 Cursor：
-# Copy-Item -Recurse ... $HOME\.cursor\skills\
-```
-
-### B. Cursor：从 GitHub 导入插件市场
-
-1. 将本仓库推送到 GitHub（需含 `.cursor-plugin/marketplace.json`）
-2. Cursor → **Customize** → 从 GitHub Repository 导入该仓库
-3. 安装插件 `scientific-paper-reading`
-
-### C. 本地插件调试（Cursor）
-
-```text
-~/.cursor/plugins/local/scientific-paper-reading/   ← 放整个仓库内容
-```
-
-然后 Reload Window，在 Customize 中确认技能出现。
+---
 
 ## 首次环境配置（每台电脑一次）
 
-**不需要 conda。** 按机器情况选一条路径：
+安装技能后，在**已安装的技能目录**或仓库内 `skills/scientific-paper-reading/` 配置运行时：
 
-### 路径 1：电脑上已有 Python 3.10+
+### 已有 Python 3.10+
 
 ```bash
-cd skills/scientific-paper-reading
+cd skills/scientific-paper-reading   # 或 ~/.agents/skills/scientific-paper-reading
 python scripts/setup_env.py
-# 可选：同时下载便携 Python 到 runtime/python/（换机/内网友好）
-python scripts/setup_env.py --fetch-python
+python scripts/setup_env.py --fetch-python   # 可选：下载便携 Python
 ```
 
-### 路径 2：电脑上没有 Python（推荐）
+### 没有系统 Python
 
 ```powershell
-# Windows（只需 PowerShell，可联网）
-cd skills\scientific-paper-reading
-.\scripts\bootstrap.ps1
+.\scripts\bootstrap.ps1    # Windows
 ```
 
 ```bash
-# macOS / Linux（只需 curl + tar）
-cd skills/scientific-paper-reading
-bash scripts/bootstrap.sh
+bash scripts/bootstrap.sh  # macOS / Linux
 ```
 
-会下载 [python-build-standalone](https://github.com/astral-sh/python-build-standalone) 便携包到 `runtime/python/`，再安装依赖。
+或在一键安装时加 `-WithEnv` / `--with-env`（没有 Python 时会走 bootstrap 拷贝逻辑）。
 
-### 路径 3：离线拷贝
-
-在能上网的机器执行 bootstrap / `fetch_portable_python.py` 后，把整个 `runtime/python/` 拷到目标机同路径即可（约 20–40MB，**不进 Git**）。
-
-之后一律用输出的 `recommended_python` 跑脚本。
+---
 
 ## 快速使用
 
-在你的文献工作区（含或将生成 `papers/`、`output/`、`notes/`）下：
+在文献工作区（将生成 `papers/`、`output/`、`notes/`）：
 
 ```bash
-# 解析
-<recommended_python> /path/to/skill/scripts/start_reading.py paper.pdf
-
-# 笔记与译文由 Agent 按 SKILL.md 写入 notes/<slug>/
-
-# 导出 Word
-<recommended_python> /path/to/skill/scripts/export_notes_docx.py notes/<slug>
+<recommended_python> .../scripts/start_reading.py paper.pdf
+# Agent 按 SKILL.md 生成笔记与译文后：
+<recommended_python> .../scripts/export_notes_docx.py notes/<slug>
 ```
-
-也可设置工作区：
 
 ```bash
-export PAPER_READING_WORKSPACE=/path/to/your/project   # Windows: set PAPER_READING_WORKSPACE=...
+export PAPER_READING_WORKSPACE=/path/to/your/project
 ```
 
-## 产出文件
-
-| 文件 | 说明 |
+| 产出 | 说明 |
 |------|------|
-| `output/<slug>/content.md` | 解析后的正文（Agent 主阅读源） |
+| `output/<slug>/content.md` | 解析正文 |
 | `notes/<slug>/reading_note.md` / `.docx` | 阅读笔记 |
 | `notes/<slug>/translation_zh.md` / `.docx` | 正文译文 |
 | `notes/<slug>/translation_si_zh.md` / `.docx` | SI 译文（若有） |
+
+---
 
 ## 许可
 
