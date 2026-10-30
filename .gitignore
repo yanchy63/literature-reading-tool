@@ -1,0 +1,15 @@
+.venv/
+.cache/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+.DS_Store
+Thumbs.db
+# Portable Python binaries (download via scripts/fetch_portable_python.py or bootstrap.*)
+**/runtime/python/
+**/runtime/python_version.json
+# User literature data (created in workspace, not in skill)
+papers/
+output/
+notes/

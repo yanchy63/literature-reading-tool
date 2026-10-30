@@ -1,0 +1,7 @@
+{
+  "version": "3.12.11",
+  "release_tag": "20250808",
+  "target": "x86_64-pc-windows-msvc",
+  "source": "python-build-standalone",
+  "asset": "cpython-3.12.11+20250808-x86_64-pc-windows-msvc-install_only.tar.gz"
+}

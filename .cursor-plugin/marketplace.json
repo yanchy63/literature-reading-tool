@@ -1,0 +1,11 @@
+{
+  "name": "scientific-paper-reading-marketplace",
+  "owner": "local",
+  "plugins": [
+    {
+      "name": "scientific-paper-reading",
+      "source": ".",
+      "description": "Scientific PDF parsing, Chinese notes/translations, and Word export"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "name": "scientific-paper-reading",
+  "description": "Parse scientific PDFs into structured Markdown; generate Chinese reading notes, translations, and Word exports with human-readable formulas.",
+  "version": "0.1.0",
+  "author": {
+    "name": "artical-review"
+  }
+}
